@@ -53,8 +53,9 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>script</key>
-				<string>if [ -d '{query}' ];then
-    ~/bin/idea {query}
+				<string>#!/usr/bin/env bash
+if [ -d '{query}' ];then
+    ${IDE_PATH} {query}
 fi</string>
 				<key>scriptargtype</key>
 				<integer>0</integer>
@@ -222,6 +223,8 @@ echo ']}'
 	<dict>
 		<key>PROJECTS_HOME</key>
 		<string>~/IdeaProjects</string>
+		<key>IDE_PATH</key>
+		<string>/Users/myuser/bin/idea</string>
 	</dict>
 	<key>variablesdontexport</key>
 	<array/>
