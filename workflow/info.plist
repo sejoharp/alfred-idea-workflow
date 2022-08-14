@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>me.chenzz.alfred.idea</string>
+	<key>category</key>
+	<string>Original</string>
+	<key>connections</key>
+	<dict>
+		<key>AEA14D68-E8BD-45C5-8DD9-1DD2614D8BAB</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>B88BF99B-81C1-432D-B698-D83FDD92C71D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>B88BF99B-81C1-432D-B698-D83FDD92C71D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>2C383A38-41C5-42C9-A415-F7B5D430BD38</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Zhongzheng Chen</string>
+	<key>description</key>
+	<string>Search and find project</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>IDEA</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>if [ -d '{query}' ];then
+    ~/bin/idea {query}
+fi</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>2C383A38-41C5-42C9-A415-F7B5D430BD38</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>3</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>34</integer>
+				<key>hotmod</key>
+				<integer>1179648</integer>
+				<key>hotstring</key>
+				<string>I</string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>uid</key>
+			<string>AEA14D68-E8BD-45C5-8DD9-1DD2614D8BAB</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>1</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>r</string>
+				<key>queuedelaycustom</key>
+				<integer>1</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>2</integer>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>#!/usr/bin/env bash
+
+projectPathArrStr=${PROJECTS_HOME}
+keyword="{query}"
+
+ifIdeaProject() {
+  local ideaDirNum=$(ls -al $1 | grep '.git' | wc -l)
+  return "$ideaDirNum"
+}
+
+searchStr="find $projectPathArrStr -maxdepth 1 -type d"
+if [ -n "$keyword" ]; then
+  searchStr+=" -name \"*$keyword*\""
+fi
+searchStr+=" -print0 | xargs -0 stat -f '%a %N' | sort -nk1 | cut -d \" \" -f 2- | head -n 50"
+#echo $searchStr
+
+declare -a resultProjectPathArr
+for project in $(eval "${searchStr}"); do
+  ifIdeaProject "$project"
+  if [ ! $? = 0 ]; then
+    resultProjectPathArr+=($project)
+  fi
+done
+
+echo '{"items": ['
+
+for ((i = 0; i &lt; ${#resultProjectPathArr[@]}; i++)); do
+  resultProjectPath=${resultProjectPathArr[i]}
+  echo '{'
+  echo '"type": "file",'
+  echo "\"title\": \"${resultProjectPath##/*/}\","
+  echo "\"subtitle\": \"$resultProjectPath\","
+  echo "\"arg\": \"$resultProjectPath\","
+  echo "\"autocomplete\": \"$resultProjectPath\""
+  echo '}'
+  if (($i != (${#resultProjectPathArr[@]}-1))); then
+    echo ','
+  fi
+done
+
+echo ']}'
+
+</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Find/Open IDEA project</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>B88BF99B-81C1-432D-B698-D83FDD92C71D</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>2C383A38-41C5-42C9-A415-F7B5D430BD38</key>
+		<dict>
+			<key>xpos</key>
+			<integer>560</integer>
+			<key>ypos</key>
+			<integer>165</integer>
+		</dict>
+		<key>AEA14D68-E8BD-45C5-8DD9-1DD2614D8BAB</key>
+		<dict>
+			<key>xpos</key>
+			<integer>150</integer>
+			<key>ypos</key>
+			<integer>165</integer>
+		</dict>
+		<key>B88BF99B-81C1-432D-B698-D83FDD92C71D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>330</integer>
+			<key>ypos</key>
+			<integer>165</integer>
+		</dict>
+	</dict>
+	<key>variables</key>
+	<dict>
+		<key>PROJECTS_HOME</key>
+		<string>~/IdeaProjects</string>
+	</dict>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>2.0.0</string>
+</dict>
+</plist>
