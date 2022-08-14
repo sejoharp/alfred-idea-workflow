@@ -17,7 +17,7 @@ So the light alfred workflow without installing heavy dependency is written.
 1. Install alfred workflow.
     * `make install` 
 1. Config project directory root path
-    * Default is is `~/IdeaPorjects`.
+    * Default is is `~/IdeaProjects`.
     * ![](assets/16438615635685.jpg)
 
 ## Usage 
